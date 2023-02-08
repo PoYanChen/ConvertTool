@@ -79,15 +79,6 @@ export class Node extends BaseConvert {
                     element.a = opacity[CC3Field.Opacity];
                     break;
                 }
-            case CC2Field.PrefabInfo:
-                {
-                    let prefab = createCC2Object(CC2Type.PrefabInfo);
-                    this.destPrefab.PushItem(prefab);
-                    let id = prefab.__metaId;
-
-                    element[CC2Field.ID] = id;
-                    break;
-                }
             default:
                 return false;
         }

@@ -29,6 +29,7 @@ export abstract class BaseConvert {
      * @param element 屬性的值
      * @param dest 新的節點物件
      * @param source 原始的節點物件
+     * @returns true - 略過此屬性複製
      */
     abstract HandlerDowngrade(key: string, element: any, dest: any, source: any): boolean;
 
@@ -42,8 +43,9 @@ export abstract class BaseConvert {
         this.destPrefab = arg.dest;
     }
 
-    Downgrade(source: any) {
+    Downgrade(source: any, list: RawPrefab) {
         let result = this.GetDefault2D();
+        list.PushItem(result);
         for (const key in result) {
             const element = result[key];
             let converted = this.HandlerDowngrade(key, element, result, source);

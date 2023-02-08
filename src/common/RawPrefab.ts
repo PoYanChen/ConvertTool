@@ -2,6 +2,7 @@ import { CC2Type, CC3Type } from "./defineType";
 
 export class RawPrefab {
     public Source: { [index: number]: any; } = {};
+    private tempQueue = [] as any[];
 
     public static Create(items: any[]): RawPrefab {
         let index = 0;
@@ -21,7 +22,12 @@ export class RawPrefab {
         let key = Object.keys(this.Source).length;
         this.Source[key] = item;
         item.__metaId = key;
+        // console.log("Do PushItem", item.__type__);
         return key;
+    }
+
+    public PushQueue(item: any) {
+        this.tempQueue.push(item);
     }
 
     public EnumerableNode(callback: (item: any) => boolean) {
@@ -116,6 +122,7 @@ export class RawPrefab {
 
         for (const key in this.Source) {
             const element = this.Source[key];
+            delete element.__metaId;
             result.push(element);
         }
 

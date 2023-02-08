@@ -1,4 +1,4 @@
-import { CC2Field } from "../common/defineType";
+import { CC2Field, CC2Type } from "../common/defineType";
 import { PrefabTree } from "../common/PrefabTree";
 import { RawPrefab } from "../common/RawPrefab";
 import { ISpriteMetaMap } from "../MetaConvert/SpriteFrameMapping";
@@ -22,7 +22,7 @@ export class PrefabConvert {
 
     public Convert(): any {
         this.walk(this.tree);
-        return this.destPrefab.PackagePrefab()
+        return this.destPrefab.PackagePrefab();
     }
 
     public walk(tree: PrefabTree) {
@@ -36,20 +36,31 @@ export class PrefabConvert {
         };
         let convert = ConvertFactory(args);
         if (convert !== undefined) {
-            newNode = convert.Downgrade(source);
+            newNode = convert.Downgrade(source, this.destPrefab);
             // console.log(newNode);
             tree.NewRawInfo = newNode;
-            this.destPrefab.PushItem(newNode);
+        }
+
+        for (const iterator of tree.Children) {
+            let node = this.walk(iterator);
+            if (tree.RawInfo.__type__ === CC2Type.Prefab) {
+                continue;
+            }
+
+            node._parent = { __id__: newNode.__metaId };
+            newNode._children = newNode._children || [];
+            newNode._children.push({ __id__: node.__metaId });
         }
 
         let newComp = [];
         for (const source of tree.Component) {
+            console.log("Walk", source.__type__, tree.RawInfo._name);
             args.node = source;
             let convert = ConvertFactory(args);
             if (convert !== undefined) {
-                let result = convert.Downgrade(source);
+                let result = convert.Downgrade(source, this.destPrefab);
                 result[CC2Field.Node] = {
-                    [CC2Field.ID]: newNode.__metaId,
+                    __id__: newNode.__metaId,
                 };
                 // console.log(result);
                 tree.NewComponent.push(result);
@@ -59,15 +70,16 @@ export class PrefabConvert {
             }
         }
 
-        let compIds = newComp.map(o => o.__metaId);
-        newNode[CC2Field.Components] = compIds;
+        if (newNode.__type__ === CC2Type.Node) {
+            let compIds = newComp.map(o => { return { __id__: o.__metaId }; });
+            newNode[CC2Field.Components] = compIds;
+        }
+
         // console.log("target ids", compIds);
 
         // let ct = newComp.map((o) => o.__type__);
         // console.log("target type", ct);
 
-        for (const iterator of tree.Children) {
-            this.walk(iterator);
-        }
+        return newNode;
     }
 }

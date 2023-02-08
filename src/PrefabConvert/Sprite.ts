@@ -11,18 +11,30 @@ export class Sprite extends BaseConvert {
     HandlerDowngrade(key: string, element: any, dest: any, source: any): boolean {
         switch (key) {
             case CC2Field.Materials:
-                let material = source[CC3Field.CustomMaterials];
-                if (material === undefined) {
+                {
+                    let material = source[CC3Field.CustomMaterials];
+                    if (material === undefined) {
+                        return true;
+                    }
+
+                    let sourceUUID = material[CC3Field.UUID];
+                    let uuid = UUID_3D_TO_2D.get(sourceUUID);
+                    dest[CC2Field.Materials] = [uuid];
                     return true;
                 }
-
-                let sourceUUID = material[CC3Field.UUID];
-                let uuid = UUID_3D_TO_2D.get(sourceUUID);
-                dest[CC2Field.Materials] = [uuid];
-                return true;
             case CC2Field.SpriteFrame:
-                // FIXME SpriteFrame
+                {
+                    let sourceSprite = source[CC3Field.SpriteFrame];
+                    let newId = this.spriteFrameConvert.GenNewUUID(sourceSprite.__uuid__);
+                    dest[CC2Field.SpriteFrame] = {
+                        [CC2Field.UUID]: newId
+                    };
+                    return true;
+                }
+            case CC2Field.SourceBlend:
+            case CC2Field.DestinationBlend:
                 return true;
+
             default:
                 return false;
         }
