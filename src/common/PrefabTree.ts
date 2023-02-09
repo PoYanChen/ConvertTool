@@ -7,13 +7,11 @@ export class PrefabTree {
     public Parent: any;
 
     public NewRawInfo: any;
-    public NewComponent: Array<any>;
 
     constructor(info: any) {
         this.RawInfo = info;
         this.Children = [];
         this.Component = [];
-        this.NewComponent = [];
     }
 
     public static Create(raw: RawPrefab): PrefabTree {

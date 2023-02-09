@@ -1,4 +1,4 @@
-import { CC2Field, CC2Type } from "../common/defineType";
+import { CC2Field, CC2Type, createCC2Object } from "../common/defineType";
 import { PrefabTree } from "../common/PrefabTree";
 import { RawPrefab } from "../common/RawPrefab";
 import { ISpriteMetaMap } from "../MetaConvert/SpriteFrameMapping";
@@ -54,7 +54,7 @@ export class PrefabConvert {
 
         let newComp = [];
         for (const source of tree.Component) {
-            console.log("Walk", source.__type__, tree.RawInfo._name);
+            // console.log("Walk", source.__type__, tree.RawInfo._name);
             args.node = source;
             let convert = ConvertFactory(args);
             if (convert !== undefined) {
@@ -63,9 +63,6 @@ export class PrefabConvert {
                     __id__: newNode.__metaId,
                 };
                 // console.log(result);
-                tree.NewComponent.push(result);
-                this.destPrefab.PushItem(result);
-
                 newComp.push(result);
             }
         }
@@ -73,6 +70,11 @@ export class PrefabConvert {
         if (newNode.__type__ === CC2Type.Node) {
             let compIds = newComp.map(o => { return { __id__: o.__metaId }; });
             newNode[CC2Field.Components] = compIds;
+
+            let prefab = this.destPrefab.GetPrefabInfo();
+            this.destPrefab.PushItem(prefab);
+
+            newNode[CC2Field.PrefabInfo] = prefab.__metaId
         }
 
         // console.log("target ids", compIds);

@@ -19,7 +19,11 @@ export class Sprite extends BaseConvert {
 
                     let sourceUUID = material[CC3Field.UUID];
                     let uuid = UUID_3D_TO_2D.get(sourceUUID);
-                    dest[CC2Field.Materials] = [uuid];
+                    dest[CC2Field.Materials] = [
+                        {
+                            [CC2Field.UUID]: uuid
+                        }
+                    ];
                     return true;
                 }
             case CC2Field.SpriteFrame:

@@ -47,6 +47,11 @@ export abstract class BaseConvert {
         let result = this.GetDefault2D();
         list.PushItem(result);
         for (const key in result) {
+
+            if (key.startsWith("__")) {
+                continue;
+            }
+
             const element = result[key];
             let converted = this.HandlerDowngrade(key, element, result, source);
             if (converted) {

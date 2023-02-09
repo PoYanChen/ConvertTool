@@ -75,6 +75,7 @@ export enum CC2Field {
 
     //#region Label
     String = "_string",
+    File = "_N$file"
     //#endregion
 }
 
@@ -118,6 +119,7 @@ export enum CC3Field {
 
     //#region Label
     String = "_string",
+    Font = "_font",
     //#endregion
 }
 

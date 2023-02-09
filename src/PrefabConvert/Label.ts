@@ -9,8 +9,6 @@ export class Label extends BaseConvert {
     }
 
     HandlerDowngrade(key: string, element: any, dest: any, source: any): boolean {
-        
-
         switch (key) {
             case CC2Field.Materials:
                 let material = source[CC3Field.CustomMaterials];
@@ -20,9 +18,27 @@ export class Label extends BaseConvert {
 
                 let sourceUUID = material[CC3Field.UUID];
                 let uuid = UUID_3D_TO_2D.get(sourceUUID);
-                dest[CC2Field.Materials] = [uuid];
+                dest[CC2Field.Materials] = [
+                    {
+                        [CC2Field.UUID]: uuid
+                    }
+                ];
                 return true;
-            //FIXME SpriteFrame
+            case CC2Field.String:
+                let str = source._string;
+                dest[CC2Field.String] = str;
+                dest._N$string = str;
+                return true;
+            case CC2Field.File:
+                let sourceSprite = source[CC3Field.Font];
+                let newId = sourceSprite.__uuid__;
+                dest[CC2Field.File] = {
+                    [CC2Field.UUID]: newId
+                };
+                return true;
+            case CC2Field.SourceBlend:
+            case CC2Field.DestinationBlend:
+                return true;
         }
 
 

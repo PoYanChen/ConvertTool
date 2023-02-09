@@ -1,8 +1,10 @@
+import { randomUUID } from "crypto";
 import { CC2Type, CC3Type } from "./defineType";
 
 export class RawPrefab {
     public Source: { [index: number]: any; } = {};
     private tempQueue = [] as any[];
+    private prefabId = "";
 
     public static Create(items: any[]): RawPrefab {
         let index = 0;
@@ -14,6 +16,7 @@ export class RawPrefab {
             index++;
         }
 
+        result.prefabId = randomUUID();
         return result;
     }
 
@@ -22,7 +25,7 @@ export class RawPrefab {
         let key = Object.keys(this.Source).length;
         this.Source[key] = item;
         item.__metaId = key;
-        // console.log("Do PushItem", item.__type__);
+        console.log("Do PushItem", item.__type__, key);
         return key;
     }
 
@@ -127,5 +130,20 @@ export class RawPrefab {
         }
 
         return result;
+    }
+
+    public GetPrefabInfo() {
+        return {
+            __type__: "cc.PrefabInfo",
+            root: {
+                __id__: 1,
+            },
+            asset: {
+                __id__: this.prefabId,
+            },
+            fileId: "",
+            sync: false,
+            __metaId: 0
+        };
     }
 }

@@ -79,6 +79,10 @@ export class Node extends BaseConvert {
                     element.a = opacity[CC3Field.Opacity];
                     break;
                 }
+            case CC2Field.PrefabInfo:
+                {
+                    break;
+                }
             default:
                 return false;
         }
