@@ -1,0 +1,12 @@
+{
+    "exclude":[
+        "./src/index.ts"
+    ],
+    "compilerOptions": {
+        "module": "AMD",
+        "lib": ["es5", "es6", "dom"],
+        "rootDir": "./src/",
+        "outFile": "./build-pkg/convert.js",
+        "esModuleInterop": true
+    }
+}
