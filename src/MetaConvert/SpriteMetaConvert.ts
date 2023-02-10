@@ -29,8 +29,8 @@ function defaultSubMeta(root: any) {
 function defaultMeta(root: any) {
     // 轉成 json 直接匹配字串
     let json = JSON.stringify(root);
-    let width = Number.parseInt(new RegExp("\"rawWidth\":([0-9]+)").exec(json)?.at(1) ?? "0");
-    let height = Number.parseInt(new RegExp("\"rawHeight\":([0-9]+)").exec(json)?.at(1) ?? "0");
+    let width = Number.parseInt(new RegExp("\"rawWidth\":([0-9]+)").exec(json)?.[1] ?? "0");
+    let height = Number.parseInt(new RegExp("\"rawHeight\":([0-9]+)").exec(json)?.[1] ?? "0");
     return {
         ver: "1.0.0",
         uuid: root.uuid,

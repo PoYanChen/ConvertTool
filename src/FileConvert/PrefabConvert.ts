@@ -74,7 +74,7 @@ export class PrefabConvert {
             let prefab = this.destPrefab.GetPrefabInfo();
             this.destPrefab.PushItem(prefab);
 
-            newNode[CC2Field.PrefabInfo] = prefab.__metaId
+            newNode[CC2Field.PrefabInfo] = { [CC2Field.ID]: prefab.__metaId };
         }
 
         // console.log("target ids", compIds);

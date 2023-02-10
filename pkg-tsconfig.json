@@ -4,10 +4,11 @@
     ],
     "compilerOptions": {
         "target": "ES5",
-        "module": "esnext",
+        "module": "commonjs",
         "rootDir": "./src",
         "outDir": "./convert",
-        "moduleResolution": "node",
-        "esModuleInterop": true
+        "moduleResolution": "classic",
+        "esModuleInterop": true,
+        "downlevelIteration": true
     }
 }

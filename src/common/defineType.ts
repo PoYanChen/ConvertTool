@@ -1,6 +1,3 @@
-import { randomUUID } from "crypto";
-import path from "path";
-
 export enum CC2Type {
     Prefab = "cc.Prefab",
     Node = "cc.Node",
@@ -75,7 +72,9 @@ export enum CC2Field {
 
     //#region Label
     String = "_string",
-    File = "_N$file"
+    File = "_N$file",
+    HorizontalAlign = "_N$horizontalAlign",
+    VerticalAlign = "_N$verticalAlign",
     //#endregion
 }
 
@@ -120,6 +119,8 @@ export enum CC3Field {
     //#region Label
     String = "_string",
     Font = "_font",
+    HorizontalAlign = "_horizontalAlign",
+    VerticalAlign = "_verticalAlign",
     //#endregion
 }
 

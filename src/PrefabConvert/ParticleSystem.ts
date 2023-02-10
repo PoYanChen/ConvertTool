@@ -21,7 +21,9 @@ export class ParticleSystem extends BaseConvert {
                     return UUID_3D_TO_2D.get(uuid);
                 });
 
-                dest[CC2Field.Materials] = newIds;
+                dest[CC2Field.Materials] = {
+                    [CC2Field.UUID]: newIds
+                };
                 break;
             default:
                 return false;

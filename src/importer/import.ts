@@ -1,14 +1,26 @@
-import decompress from "decompress";
 import { ResourceMapping } from "./ResourceMapping";
-import path from "path";
 import { ImportMode } from "./define";
+import path from "path";
+import { readFileSync, writeFileSync, ensureDir } from "fs-extra";
+import { JSZipObject } from "../../node_modules/jszip/index";
 
+let JSZIP = require("jszip")
 
 export interface ImportArgs {
     LocalPath: string; // 本地根目錄(絕對路徑)
     TempPath: string; // 暫存路徑(絕對路徑)
     SourcePath: string; // 來源檔案目錄(絕對路徑)
     ImportMode: ImportMode; // 導入模式
+}
+
+async function saveZipFile(savePath: string, data: JSZipObject) {
+    let dir = path.dirname(savePath);
+    await ensureDir(dir);
+
+    if (data.dir === false) {
+        let buffer = await data.async("nodebuffer");
+        writeFileSync(savePath, buffer);
+    }
 }
 
 // 導入方法主函數
@@ -18,10 +30,17 @@ export async function StartConvert(args: ImportArgs) {
         args.TempPath = path.join(args.LocalPath);
     }
 
+    let zip = new JSZIP();
     let sourcePath = args.SourcePath;
     if (sourcePath.endsWith("zip")) {
         try {
-            await decompress(sourcePath, args.TempPath);
+            let file = readFileSync(sourcePath);
+            await zip.loadAsync(file);
+            for (const key in zip.files) {
+                const element = zip.files[key];
+                let savePath = path.join(args.TempPath, key);
+                await saveZipFile(savePath, element);
+            }
             sourcePath = args.TempPath;
         } catch (error) {
             console.error("unzip fail");

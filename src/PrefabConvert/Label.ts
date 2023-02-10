@@ -39,6 +39,18 @@ export class Label extends BaseConvert {
             case CC2Field.SourceBlend:
             case CC2Field.DestinationBlend:
                 return true;
+            case CC2Field.HorizontalAlign:
+                {
+                    let value = source[CC3Field.HorizontalAlign]
+                    dest[CC2Field.HorizontalAlign] = value
+                    return true
+                }
+            case CC2Field.VerticalAlign:
+                {
+                    let value = source[CC3Field.VerticalAlign]
+                    dest[CC2Field.VerticalAlign] = value
+                    return true
+                }
         }
 
 

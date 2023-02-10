@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 } from "uuid";
 import { CC2Type, CC3Type } from "./defineType";
 
 export class RawPrefab {
@@ -16,7 +16,7 @@ export class RawPrefab {
             index++;
         }
 
-        result.prefabId = randomUUID();
+        result.prefabId = v4();
         return result;
     }
 
@@ -139,7 +139,7 @@ export class RawPrefab {
                 __id__: 1,
             },
             asset: {
-                __id__: this.prefabId,
+                __uuid__: this.prefabId,
             },
             fileId: "",
             sync: false,

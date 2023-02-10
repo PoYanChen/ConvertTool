@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 } from "uuid";
 
 export interface ISpriteMetaMap {
     // 若為已指定的 ID 不重新生成
@@ -19,7 +19,7 @@ export class SpriteFrameMapping implements ISpriteMetaMap {
             return result;
         }
 
-        result = randomUUID();
+        result = v4();
 
         this.SourceToTarget.set(source, result);
         this.TargetToSource.set(result, source);

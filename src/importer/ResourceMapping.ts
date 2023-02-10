@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import { lstatSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { readJsonSync } from "fs-extra";
 import { glob } from "glob";
@@ -7,6 +6,7 @@ import { ImportMode } from "./define";
 import { GetMetaConvertFactory } from "../MetaConvert/MetaConvertFactory";
 import { SpriteFrameMapping } from "../MetaConvert/SpriteFrameMapping";
 import { GetFileConvert } from "../FileConvert/FileConvertFactory";
+import { v4 } from 'uuid';
 
 export class ResourceState {
     public UUIDToMetaPath = new Map<string, string>();
@@ -58,7 +58,7 @@ export class ResourceMapping extends ResourceState {
             this.UUIDToMetaPath.set(uuid, metaPath);
             this.MetaUUIDMap.set(uuid, meta);
 
-            let filePath = regex.exec(metaPath)?.at(1);
+            let filePath = regex.exec(metaPath)?.[1];
             if (filePath !== undefined) {
                 this.PathToUUID.set(filePath, uuid);
             }
@@ -82,7 +82,7 @@ export class ResourceMapping extends ResourceState {
             let uuid = this.PathToUUID.get(filePath);
 
             if (uuid === undefined) {
-                uuid = randomUUID();
+                uuid = v4() as string;
             }
 
             this.UUIDToFilePath.set(uuid, filePath);
