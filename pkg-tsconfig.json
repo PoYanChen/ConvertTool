@@ -3,10 +3,11 @@
         "./src/index.ts"
     ],
     "compilerOptions": {
-        "module": "AMD",
-        "lib": ["es5", "es6", "dom"],
-        "rootDir": "./src/",
-        "outFile": "./build-pkg/convert.js",
+        "target": "ES5",
+        "module": "esnext",
+        "rootDir": "./src",
+        "outDir": "./convert",
+        "moduleResolution": "node",
         "esModuleInterop": true
     }
 }
