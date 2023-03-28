@@ -12,7 +12,7 @@ export class Label extends BaseConvert {
         switch (key) {
             case CC2Field.Materials:
                 let material = source[CC3Field.CustomMaterials];
-                if (material === undefined) {
+                if (material == null) {
                     return true;
                 }
 
@@ -31,6 +31,9 @@ export class Label extends BaseConvert {
                 return true;
             case CC2Field.File:
                 let sourceSprite = source[CC3Field.Font];
+                if (sourceSprite == null) {
+                    return true;
+                }
                 let newId = sourceSprite.__uuid__;
                 dest[CC2Field.File] = {
                     [CC2Field.UUID]: newId
@@ -41,15 +44,15 @@ export class Label extends BaseConvert {
                 return true;
             case CC2Field.HorizontalAlign:
                 {
-                    let value = source[CC3Field.HorizontalAlign]
-                    dest[CC2Field.HorizontalAlign] = value
-                    return true
+                    let value = source[CC3Field.HorizontalAlign];
+                    dest[CC2Field.HorizontalAlign] = value;
+                    return true;
                 }
             case CC2Field.VerticalAlign:
                 {
-                    let value = source[CC3Field.VerticalAlign]
-                    dest[CC2Field.VerticalAlign] = value
-                    return true
+                    let value = source[CC3Field.VerticalAlign];
+                    dest[CC2Field.VerticalAlign] = value;
+                    return true;
                 }
         }
 

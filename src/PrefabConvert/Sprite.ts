@@ -13,7 +13,7 @@ export class Sprite extends BaseConvert {
             case CC2Field.Materials:
                 {
                     let material = source[CC3Field.CustomMaterials];
-                    if (material === undefined) {
+                    if (material == null) {
                         return true;
                     }
 

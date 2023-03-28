@@ -3,8 +3,8 @@ import { ImportArgs, StartConvert } from "./importer/import";
 
 let args: ImportArgs = {
     LocalPath: "E:\\Creator\\TestV2\\assets",
-    TempPath: "E:\\TypeScript\\temp",
-    SourcePath: "E:\\TypeScript\\升降測試用3版檔案.zip",
+    TempPath: "E:\\Creator\\TestV2\\assets",
+    SourcePath: "C:\\Users\\chengrongsun\\Downloads\\Package_02.zip",
     ImportMode: ImportMode.Replace
 };
 

@@ -1,5 +1,5 @@
 import { AnimationCurve, AnimationPathType, AnimationTrack, CC3DAnimation, TrackType } from "./CC3DAnimation";
-import { CC2Field, CC2Type, CC3Type, createCC2Object } from "./defineType";
+import { CC2Field, CC2Type, CC3Field, CC3Type, createCC2Object } from "./defineType";
 
 interface frameData {
     frame: number,
@@ -10,6 +10,15 @@ interface zipSource<T> {
     field: string,
     values: Array<T>;
 }
+
+interface fieldSelector {
+    Index: number,
+    Field: string,
+}
+
+let pathMapping: any = {
+    ["eulerAngles"]: "angle",
+};
 
 function zipValue<T>(type: string, sources: zipSource<T>[]) {
     let length = sources.map(o => o.values.length);
@@ -73,7 +82,10 @@ export class CC2DAnimation {
                 continue;
             }
 
-            this.convertPath(track, paths);
+            let isPaths = this.convertPath(track, paths);
+            if (!isPaths) {
+                this.convertProps(track, this.animation.curveData);
+            }
         }
 
         // console.log(this.animation);
@@ -87,7 +99,7 @@ export class CC2DAnimation {
 
         if (nodePath === undefined) {
             console.log("not find node path");
-            return;
+            return false;
         }
 
         let info = root[nodePath];
@@ -102,6 +114,27 @@ export class CC2DAnimation {
             node = {};
             info[field] = node;
         }
+
+        this.convertClip(clip, node);
+        return true;
+    }
+
+    private convertProps(clip: AnimationTrack, root: any) {
+        let node = root["props"];
+        if (node === undefined) {
+            node = {};
+            root["props"] = node;
+        }
+
+        let temp: any = {};
+        this.convertClip(clip, temp);
+
+        let values = Object.values(temp).at(0);
+        let path = pathMapping[clip.PathField] ?? clip.PathField;
+        node[path] = values;
+    }
+
+    private convertClip(clip: AnimationTrack, node: any) {
 
         switch (clip.TrackType) {
             case TrackType.RealTrack:
@@ -120,7 +153,6 @@ export class CC2DAnimation {
                 this.fillObjectTrack(clip, node);
                 break;
         }
-
     }
 
     private getComponentsFieldPath(type: string, property: string) {
@@ -149,6 +181,12 @@ export class CC2DAnimation {
     private fillVectorTrack(track: AnimationTrack, node: any) {
         let field = track.PathField;
         switch (field) {
+            case "scale":
+                this.fillScaleTrack(track, node, "scale");
+                break;
+            case "position":
+                this.fillScaleTrack(track, node, "position");
+                break;
             case "anchorPoint":
                 this.fillAnchorTrack(track, node);
                 break;
@@ -156,6 +194,25 @@ export class CC2DAnimation {
                 this.fillRotateTrack(track, node);
                 break;
         }
+    }
+
+    private fillScaleTrack(track: AnimationTrack, node: any, prop: string) {
+        let channel = track.Channel;
+        if (channel.length < 2) {
+            console.log("channel length not enough");
+            return;
+        }
+
+        let fields: fieldSelector[] = [
+            { Field: "x", Index: 0 },
+            { Field: "y", Index: 1 },
+        ];
+
+        node[prop] = this.mergeRealCurve(
+            channel,
+            fields,
+            "cc.Vec2"
+        );
     }
 
     private fillAnchorTrack(track: AnimationTrack, node: any) {
@@ -251,6 +308,31 @@ export class CC2DAnimation {
                 value: value,
             });
         }
+        return result;
+    }
+
+    private mergeRealCurve(curves: AnimationCurve[], fieldConfig: fieldSelector[], type: string) {
+        let result = [] as frameData[];
+        let curve = curves[0];
+        for (let index = 0; index < curve._times.length; index++) {
+            let time = curve._times[index];
+            let value: any = {
+                __type__: type
+            };
+            let frameData: any = {
+                frame: time,
+                value: value
+            };
+
+            for (const iterator of fieldConfig) {
+                let field = iterator.Field;
+                let channelValues = curves[iterator.Index]._values;
+                value[field] = channelValues[index].value;
+            }
+
+            result.push(frameData);
+        }
+
         return result;
     }
 
