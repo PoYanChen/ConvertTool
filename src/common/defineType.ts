@@ -25,6 +25,7 @@ export enum CC3Type {
     PrefabInfo = "cc.PrefabInfo",
     Button = "cc.Button",
     Sprite = "cc.Sprite",
+    SpriteFrame = "cc.SpriteFrame",
     Animation = "cc.Animation",
     AnimationClip = "cc.AnimationClip",
     Mask = "cc.Mask",

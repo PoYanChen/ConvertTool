@@ -44,6 +44,6 @@ export function GetFileConvert(path: string, node: any, sprite: ISpriteMetaMap):
         case FileType.Prefab:
             return new PrefabConvert(node, sprite);
         case FileType.Animation:
-            return new AnimationConvert(node);
+            return new AnimationConvert(node, sprite);
     }
 }

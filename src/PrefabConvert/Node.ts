@@ -1,4 +1,5 @@
 import { CC2Field, CC2Type, CC3Field, CC3Type, createCC2Object } from "../common/defineType";
+import { MergeToEuler } from "../common/math";
 import { BaseConvert } from "./BaseConvert";
 
 export class Node extends BaseConvert {
@@ -64,10 +65,13 @@ export class Node extends BaseConvert {
                 }
             case CC2Field.EulerAngles:
                 {
-                    let euler = source[CC3Field.EulerAngles];
+                    let quat = source[CC3Field.LocalRotation];
+                    let sourceEuler = source[CC3Field.EulerAngles];
+                    let euler = MergeToEuler(quat, sourceEuler, true);
                     element.x = euler.x;
                     element.y = euler.y;
                     element.z = euler.z;
+
                     break;
                 }
             case CC2Field.Color:

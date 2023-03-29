@@ -4,7 +4,7 @@ import { ImportArgs, StartConvert } from "./importer/import";
 let args: ImportArgs = {
     LocalPath: "E:\\Creator\\TestV2\\assets",
     TempPath: "E:\\Creator\\TestV2\\assets",
-    SourcePath: "C:\\Users\\chengrongsun\\Downloads\\Package_02.zip",
+    SourcePath: "C:\\Users\\chengrongsun\\Downloads\\Package_04.zip",
     ImportMode: ImportMode.Replace
 };
 

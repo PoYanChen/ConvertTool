@@ -24,6 +24,8 @@ export interface AnimationPath {
 
 export interface ChannelKeyFrame {
     __type__: string;
+    __uuid__: string;
+    __expectedType__: string;
     interpolationMode: number;
     tangentWeightMode: number;
     value: number;

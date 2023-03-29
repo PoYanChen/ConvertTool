@@ -1,3 +1,5 @@
+import { ISpriteMetaMap } from "../MetaConvert/SpriteFrameMapping";
+import { Animation } from "../PrefabConvert/Animation";
 import { AnimationCurve, AnimationPathType, AnimationTrack, CC3DAnimation, TrackType } from "./CC3DAnimation";
 import { CC2Field, CC2Type, CC3Field, CC3Type, createCC2Object } from "./defineType";
 
@@ -18,6 +20,10 @@ interface fieldSelector {
 
 let pathMapping: any = {
     ["eulerAngles"]: "angle",
+};
+
+let componentMapping: any = {
+    ["spriteFrame"]: "cc.Sprite",
 };
 
 function zipValue<T>(type: string, sources: zipSource<T>[]) {
@@ -49,10 +55,16 @@ export class CC2DAnimation {
 
     private animation: any;
     private sourceAnimation: CC3DAnimation;
+    private sprite: ISpriteMetaMap;
 
-    constructor(anim: CC3DAnimation) {
+    constructor(anim: CC3DAnimation, sprite: ISpriteMetaMap) {
         this.animation = createCC2Object(CC2Type.AnimationClip);
         this.sourceAnimation = anim;
+        this.sprite = sprite;
+
+        if (anim.Element.get(0)._name == "SkillWheel_Pointer_In") {
+            console.log("Stop");
+        }
     }
 
     public ParserAnimation() {
@@ -74,7 +86,7 @@ export class CC2DAnimation {
 
     private convertTrack() {
         let clip = this.sourceAnimation.GetAnimationClip();
-        let paths = this.animation.curveData.paths;
+        let root = this.animation.curveData;
         for (const iterator of clip._tracks) {
             let id = iterator.__id__;
             let track = this.sourceAnimation.ParserTrack(id);
@@ -82,13 +94,22 @@ export class CC2DAnimation {
                 continue;
             }
 
-            let isPaths = this.convertPath(track, paths);
+            let isPaths = this.convertPath(track, root);
             if (!isPaths) {
                 this.convertProps(track, this.animation.curveData);
             }
         }
 
         // console.log(this.animation);
+    }
+
+    private lazyField(info: any, field: string) {
+        let node = info[field];
+        if (node === undefined) {
+            node = {};
+            info[field] = node;
+        }
+        return node;
     }
 
     private convertPath(clip: AnimationTrack, root: any) {
@@ -120,16 +141,25 @@ export class CC2DAnimation {
     }
 
     private convertProps(clip: AnimationTrack, root: any) {
-        let node = root["props"];
-        if (node === undefined) {
-            node = {};
-            root["props"] = node;
+        let node: any;
+        // 嵌套 component
+        let comp = componentMapping[clip.PathField];
+        if (comp === undefined) {
+            node = this.lazyField(root, "props");
+        } else {
+            node = this.lazyField(root, "comps");
+            node = this.lazyField(node, comp);
         }
 
         let temp: any = {};
         this.convertClip(clip, temp);
 
-        let values = Object.values(temp).at(0);
+        let key = Object.keys(temp);
+        if (key.length === 0) {
+            return;
+        }
+
+        let values = temp[key[0]];
         let path = pathMapping[clip.PathField] ?? clip.PathField;
         node[path] = values;
     }
@@ -163,6 +193,8 @@ export class CC2DAnimation {
         switch (typeMap) {
             case [CC3Type.Sprite, "color"]:
                 return "comps";
+            case [CC3Type.Sprite, "spriteFrame"]:
+                return "spriteFrame";
             default:
                 return "props";
         }
@@ -294,8 +326,22 @@ export class CC2DAnimation {
         let field = track.PathField;
         let channel = track.Channel[0];
 
-        let result = this.bindObjectCurve(channel);
-        node[field] = result;
+        let curveType = this.getObjectCurveType(channel);
+        switch (curveType) {
+            case CC3Type.SpriteFrame:
+                {
+                    let result = this.bindSpriteFrameCurve(channel);
+                    node[field] = result;
+                    break;
+                }
+            default:
+                {
+                    let result = this.bindObjectCurve(channel);
+                    node[field] = result;
+                    break;
+                }
+        }
+
     }
 
     private bindRealCurve(curve: AnimationCurve) {
@@ -333,6 +379,31 @@ export class CC2DAnimation {
             result.push(frameData);
         }
 
+        return result;
+    }
+
+    private getObjectCurveType(curve: AnimationCurve) {
+        for (let index = 0; index < curve._times.length; index++) {
+            let value = curve._values[index];
+            return value.__expectedType__;
+        }
+
+        return undefined;
+    }
+
+    private bindSpriteFrameCurve(curve: AnimationCurve) {
+        let result = [] as frameData[];
+        for (let index = 0; index < curve._times.length; index++) {
+            let time = curve._times[index];
+            let value = curve._values[index].__uuid__;
+            let newUUID = this.sprite.GenNewUUID(value);
+            result.push({
+                frame: time,
+                value: {
+                    [CC2Field.UUID]: newUUID
+                },
+            });
+        }
         return result;
     }
 
