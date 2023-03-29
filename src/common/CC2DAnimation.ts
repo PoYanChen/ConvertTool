@@ -123,11 +123,8 @@ export class CC2DAnimation {
             return false;
         }
 
-        let info = root[nodePath];
-        if (info === undefined) {
-            info = {};
-            root[nodePath] = info;
-        }
+        let paths = this.lazyField(root, "paths");
+        let info = this.lazyField(paths, nodePath);
 
         let field = this.getComponentsFieldPath(componentPath, clip.PathField);
         let node = info[field];
